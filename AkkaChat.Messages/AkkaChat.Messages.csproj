@@ -41,10 +41,13 @@
   <ItemGroup>
     <Compile Include="ChatLogEntry.cs" />
     <Compile Include="Join.cs" />
+    <Compile Include="JoinRoom.cs" />
     <Compile Include="ProcessInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Say.cs" />
     <Compile Include="Update.cs" />
+    <Compile Include="Welcome.cs" />
+    <Compile Include="WhoIsInRoom.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

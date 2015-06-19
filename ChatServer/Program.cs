@@ -19,6 +19,9 @@ namespace ChatServer
 
             var config = ConfigurationFactory.ParseString(
                 @"akka {
+                    stdout-loglevel=DEBUG
+                    loglevel = DEBUG
+                    log-config-on-start = on        
                     actor {
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
                     }
@@ -29,15 +32,22 @@ namespace ChatServer
                             hostname = localhost
                         }
                     }
+                    debug {  
+                          receive = on 
+                          autoreceive = on
+                          lifecycle = on
+                          event-stream = on
+                          unhandled = on
+                    }
                 }".Replace("[PORT]", port));
 
             using (var system = ActorSystem.Create("ChatServer", config))
             {
-                Room = system.ActorOf(Props.Create(() => new AkkaChat.Actors.RoomActor()), "room");
+                RoomSupervisor = system.ActorOf(Props.Create(() => new AkkaChat.Actors.RoomSupervisorActor()), "roomSupervisor");
                 system.AwaitTermination();
             }
         }
 
-        private static IActorRef Room;
+        private static IActorRef RoomSupervisor;
     }
 }

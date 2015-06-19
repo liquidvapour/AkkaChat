@@ -6,5 +6,6 @@ namespace AkkaChat.Messages
     {
         public DateTime On { get; set; }
         public string Message { get; set; }
+        public string Who { get; set; }
     }
 }

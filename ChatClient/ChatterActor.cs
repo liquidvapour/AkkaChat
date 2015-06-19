@@ -1,23 +1,33 @@
 ﻿using System;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 using Akka.Actor;
 using AkkaChat.Messages;
 
 namespace ChatClient
 {
-    class ChatterActor : ReceiveActor
+    class ChatterActor : ReceiveActor, IWithUnboundedStash
     {
-        private readonly ActorSelection _room;
-        private IActorRef _consoleReader;
+        private readonly ActorSelection _roomSupervisor;
+        private readonly IActorRef _consoleReader;
+        private IActorRef _room;
+        private readonly Regex _rex = new Regex(@"^\\join (?<room>[a-zA-Z0-9]*) (?<user>[a-zA-Z0-9]*)", RegexOptions.Compiled);
 
-        public ChatterActor(ActorSelection room)
+        public ChatterActor(ActorSelection roomSupervisor)
         {
             _consoleReader = Context.ActorOf(Props.Create(() => new ConsoleReader()));
 
-            _room = room;
+            _roomSupervisor = roomSupervisor;
             Receive<ProcessInput>(m => Handle(m));
             Receive<Update>(m => Handle(m));
             Receive<InputReceived>(m => Handle(m));
+            Receive<Welcome>(m => Handle(m));
+        }
+
+        private void Handle(Welcome message)
+        {
+            _room = Sender;
+            Console.WriteLine("You have been welcomed to '{0}'.", message.Name);
+            Stash.UnstashAll();
         }
 
         private void Handle(InputReceived message)
@@ -25,11 +35,15 @@ namespace ChatClient
             var input = message.Input;
             if (!input.StartsWith("\\"))
             {
-                _room.Tell(new Say {Message = input});
+                Say(input);
             }
             else if (input.StartsWith("\\join"))
             {
-                _room.Tell(new Join {Name = input.Substring(6)});
+                HandleJoin(input);
+            }
+            else if (input.StartsWith("\\whoisin"))
+            {
+                WhoIsIn();
             }
             else if (input.Equals("\\quit"))
             {
@@ -40,9 +54,40 @@ namespace ChatClient
 
         }
 
+        private void WhoIsIn()
+        {
+            _room.Tell(new WhoIsInRoom());
+        }
+
+        private void HandleJoin(string input)
+        {
+            var matches = _rex.Match(input);
+
+            var roomName = matches.Groups["room"].Value;
+            var chatterName = matches.Groups["user"].Value;
+
+            _roomSupervisor.Tell(new JoinRoom
+            {
+                RoomName = roomName, 
+                ChatterName = chatterName
+            });
+        }
+
+        private void Say(string input)
+        {
+            if (_room != null)
+            {
+                _room.Tell(new Say {Message = input});
+            }
+            else
+            {
+                Stash.Stash();
+            }
+        }
+
         private void Handle(Update message)
         {
-            Console.WriteLine("{0}: {1}", message.ChatLogEntry.On, message.ChatLogEntry.Message);
+            Console.WriteLine("<{0}> {2}: {1}", message.ChatLogEntry.On, message.ChatLogEntry.Message, message.ChatLogEntry.Who);
         }
 
         private void Handle(ProcessInput message)
@@ -50,30 +95,6 @@ namespace ChatClient
             _consoleReader.Tell(message);
         }
 
-
-    }
-
-    class ConsoleReader : ReceiveActor
-    {
-        public ConsoleReader()
-        {
-            Receive<ProcessInput>(m => Handle(m));
-        }
-
-        private void Handle(ProcessInput processInput)
-        {
-            var input = Console.ReadLine();
-            Sender.Tell(new InputReceived(input));
-        }
-    }
-
-    internal class InputReceived
-    {
-        public InputReceived(string input)
-        {
-            Input = input;
-        }
-
-        public string Input { get; private set; }
+        public IStash Stash { get; set; }
     }
 }

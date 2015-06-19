@@ -49,9 +49,9 @@ namespace ChatClient
 
             var chatSystem = ActorSystem.Create("ChatSystem", config);
 
-            
-            var room = chatSystem.ActorSelection(string.Format("akka.tcp://ChatServer@{0}:{1}/user/room", serverIp, serverPort));
-            var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(room)), "chatter");
+
+            var roomSupervisor = chatSystem.ActorSelection(string.Format("akka.tcp://ChatServer@{0}:{1}/user/roomSupervisor", serverIp, serverPort));
+            var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(roomSupervisor)), "chatter");
             
             chatter.Tell(new ProcessInput());
 
