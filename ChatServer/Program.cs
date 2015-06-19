@@ -1,5 +1,6 @@
 ﻿using Akka.Actor;
 using Akka.Configuration;
+using Mono.Options;
 
 namespace ChatServer
 {
@@ -7,6 +8,15 @@ namespace ChatServer
     {
         static void Main(string[] args)
         {
+            var port = "8080";
+
+            var p = new OptionSet
+            {
+                {"p|port=", v => port = v}
+            };
+
+            p.Parse(args);
+
             var config = ConfigurationFactory.ParseString(
                 @"akka {
                     actor {
@@ -15,11 +25,11 @@ namespace ChatServer
 
                     remote {
                         helios.tcp {
-                            port = 8080
+                            port = [PORT]
                             hostname = localhost
                         }
                     }
-                }");
+                }".Replace("[PORT]", port));
 
             using (var system = ActorSystem.Create("ChatServer", config))
             {

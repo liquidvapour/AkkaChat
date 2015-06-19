@@ -1,6 +1,7 @@
 ﻿using Akka.Actor;
 using Akka.Configuration;
 using AkkaChat.Messages;
+using Mono.Options;
 
 namespace ChatClient
 {
@@ -8,6 +9,20 @@ namespace ChatClient
     {
         static void Main(string[] args)
         {
+
+            var port = "8090";
+            var machine = "localhost";
+            var serverIp = "localhost";
+            var serverPort = "8080";
+
+            var p = new OptionSet
+            {
+                { "p|port=", v => port = v},
+                { "h|hostname=", v => machine = v},
+                { "s|server=", v => serverIp = v},
+                { "r|serverPort=", v => serverPort = v}
+            };
+
             var hocon = @"akka {
                     actor {
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
@@ -21,18 +36,8 @@ namespace ChatClient
                     }
                 }";
 
-            var port = "8090";
-            var machine = "localhost";
 
-            if (args.Length > 0)
-            {
-                machine = args[0];
-            }
-
-            if (args.Length > 1)
-            {
-                port = args[1];
-            }
+            p.Parse(args);
 
             hocon = hocon.Replace("[PORT]", port);
             hocon = hocon.Replace("[MACHINE]", machine);
@@ -44,7 +49,8 @@ namespace ChatClient
 
             var chatSystem = ActorSystem.Create("ChatSystem", config);
 
-            var room = chatSystem.ActorSelection("akka.tcp://ChatServer@localhost:8080/user/room");
+            
+            var room = chatSystem.ActorSelection(string.Format("akka.tcp://ChatServer@{0}:{1}/user/room", serverIp, serverPort));
             var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(room)), "chatter");
             
             chatter.Tell(new ProcessInput());
