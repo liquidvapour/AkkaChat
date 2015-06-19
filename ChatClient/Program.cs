@@ -37,6 +37,9 @@ namespace ChatClient
             Greet();
 
             var hocon = @"akka {
+                    stdout-loglevel=DEBUG
+                    loglevel = DEBUG
+                    log-config-on-start = on        
                     actor {
                         provider = ""Akka.Remote.RemoteActorRefProvider, Akka.Remote""
                     }
@@ -46,6 +49,13 @@ namespace ChatClient
                             port = [PORT]
                             hostname = [MACHINE]
                         }
+                    }
+                    debug {  
+                          receive = on 
+                          autoreceive = on
+                          lifecycle = on
+                          event-stream = on
+                          unhandled = on
                     }
                 }";
 
@@ -60,8 +70,7 @@ namespace ChatClient
             var chatSystem = ActorSystem.Create("ChatSystem", config);
 
 
-            var roomSupervisor = chatSystem.ActorSelection(string.Format("akka.tcp://ChatServer@{0}:{1}/user/roomSupervisor", serverIp, serverPort));
-            var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(roomSupervisor)), "chatter");
+            var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(serverIp, serverPort)), "chatter");
             
             chatter.Tell(new ProcessInput());
 

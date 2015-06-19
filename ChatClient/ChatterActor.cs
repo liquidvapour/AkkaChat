@@ -7,16 +7,16 @@ namespace ChatClient
 {
     class ChatterActor : ReceiveActor, IWithUnboundedStash
     {
-        private readonly ActorSelection _roomSupervisor;
+        private readonly IActorRef _roomSupervisor;
         private readonly IActorRef _consoleReader;
         private IActorRef _room;
         private readonly Regex _rex = new Regex(@"^\\join (?<room>[a-zA-Z0-9]*) (?<user>[a-zA-Z0-9]*)", RegexOptions.Compiled);
 
-        public ChatterActor(ActorSelection roomSupervisor)
+        public ChatterActor(string serverIp, string serverPort)
         {
             _consoleReader = Context.ActorOf(Props.Create(() => new ConsoleReader()));
 
-            _roomSupervisor = roomSupervisor;
+            _roomSupervisor = Context.ActorOf(Props.Create(() => new RoomSupervisorProxyActor(serverIp, serverPort)));
             Receive<ProcessInput>(m => Handle(m));
             Receive<Update>(m => Handle(m));
             Receive<InputReceived>(m => Handle(m));
