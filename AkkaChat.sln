@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatClient", "ChatClient\ChatClient.csproj", "{47F79E22-EA01-4CB4-B202-50D1E2C2D5FC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChatServer", "ChatServer\ChatServer.csproj", "{698BD3F4-9F4E-4D2A-AB2B-A039C44A2E87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaChat.Messages", "AkkaChat.Messages\AkkaChat.Messages.csproj", "{D3FB21F6-39C3-466E-8FA0-1E600A358F1E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AkkaChat.Actors", "AkkaChat.Actors\AkkaChat.Actors.csproj", "{77C4E61E-D209-46C1-9706-9E829B52AFA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{47F79E22-EA01-4CB4-B202-50D1E2C2D5FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{47F79E22-EA01-4CB4-B202-50D1E2C2D5FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{47F79E22-EA01-4CB4-B202-50D1E2C2D5FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{47F79E22-EA01-4CB4-B202-50D1E2C2D5FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{698BD3F4-9F4E-4D2A-AB2B-A039C44A2E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{698BD3F4-9F4E-4D2A-AB2B-A039C44A2E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{698BD3F4-9F4E-4D2A-AB2B-A039C44A2E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{698BD3F4-9F4E-4D2A-AB2B-A039C44A2E87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3FB21F6-39C3-466E-8FA0-1E600A358F1E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3FB21F6-39C3-466E-8FA0-1E600A358F1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3FB21F6-39C3-466E-8FA0-1E600A358F1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3FB21F6-39C3-466E-8FA0-1E600A358F1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77C4E61E-D209-46C1-9706-9E829B52AFA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77C4E61E-D209-46C1-9706-9E829B52AFA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77C4E61E-D209-46C1-9706-9E829B52AFA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77C4E61E-D209-46C1-9706-9E829B52AFA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
