@@ -15,7 +15,6 @@ namespace ChatClient
         public ChatterActor(string serverIp, string serverPort)
         {
             _consoleReader = Context.ActorOf(Props.Create(() => new ConsoleReader()));
-
             _roomSupervisor = Context.ActorOf(Props.Create(() => new RoomSupervisorProxyActor(serverIp, serverPort)));
             Receive<ProcessInput>(m => Handle(m));
             Receive<Update>(m => Handle(m));
@@ -35,15 +34,15 @@ namespace ChatClient
             var input = message.Input;
             if (!input.StartsWith("\\"))
             {
-                Say(input);
+                SendSay(input);
             }
             else if (input.StartsWith("\\join"))
             {
-                HandleJoin(input);
+                SendJoin(input);
             }
             else if (input.StartsWith("\\whoisin"))
             {
-                WhoIsIn();
+                SendWhoIsIn();
             }
             else if (input.Equals("\\quit"))
             {
@@ -54,12 +53,12 @@ namespace ChatClient
 
         }
 
-        private void WhoIsIn()
+        private void SendWhoIsIn()
         {
             _room.Tell(new WhoIsInRoom());
         }
 
-        private void HandleJoin(string input)
+        private void SendJoin(string input)
         {
             var matches = _rex.Match(input);
 
@@ -73,7 +72,7 @@ namespace ChatClient
             });
         }
 
-        private void Say(string input)
+        private void SendSay(string input)
         {
             if (_room != null)
             {

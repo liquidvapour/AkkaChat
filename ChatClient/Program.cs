@@ -11,7 +11,7 @@ namespace ChatClient
         static void Main(string[] args)
         {
 
-            var port = "8090";
+            var port = "0";
             var machine = "localhost";
             var serverIp = "localhost";
             var serverPort = "8080";
@@ -19,7 +19,7 @@ namespace ChatClient
             var showHelp = false;
             var p = new OptionSet
             {
-                { "p|port=", "The port this client will listen on. Defaults to '8090'.", v => port = v},
+                { "p|port=", "The port this client will listen on. Defaults to '0'.", v => port = v},
                 { "h|hostname=", "This client's host name. Defaults to 'localhost'.", v => machine = v},
                 { "s|server=", "The address of the chat server. defaults to 'localhost'.", v => serverIp = v},
                 { "r|serverPort=", "The port of the chat server. Defaults to '8080'.", v => serverPort = v},
