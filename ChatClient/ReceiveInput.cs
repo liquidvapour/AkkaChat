@@ -1,8 +1,8 @@
 ﻿namespace ChatClient
 {
-    internal class InputReceived
+    public class ReceiveInput
     {
-        public InputReceived(string input)
+        public ReceiveInput(string input)
         {
             Input = input;
         }

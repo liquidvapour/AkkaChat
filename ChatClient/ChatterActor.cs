@@ -1,24 +1,28 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Akka.Actor;
 using AkkaChat.Messages;
 
 namespace ChatClient
 {
-    class ChatterActor : ReceiveActor, IWithUnboundedStash
+    public class ChatterActor : ReceiveActor, IWithUnboundedStash
     {
+        private readonly IEnumerable<IProcessCommands> _commandProcessors;
         private readonly IActorRef _roomSupervisor;
         private readonly IActorRef _consoleReader;
         private IActorRef _room;
         private readonly Regex _rex = new Regex(@"^\\join (?<room>[a-zA-Z0-9]*) (?<user>[a-zA-Z0-9]*)", RegexOptions.Compiled);
 
-        public ChatterActor(string serverIp, string serverPort)
+        public ChatterActor(string serverIp, string serverPort, IEnumerable<IProcessCommands> commandProcessors, IActorRef consoleReader)
         {
-            _consoleReader = Context.ActorOf(Props.Create(() => new ConsoleReader()));
-            _roomSupervisor = Context.ActorOf(Props.Create(() => new RoomSupervisorProxyActor(serverIp, serverPort)));
-            Receive<ProcessInput>(m => Handle(m));
+            _commandProcessors = commandProcessors;
+            _consoleReader = consoleReader;
+            _roomSupervisor = Context.ActorOf(Props.Create(() => new RoomSupervisorProxyActor(serverIp, serverPort)), "roomSupervisorProxy");
+            Receive<GetNextInput>(m => Handle(m));
             Receive<Update>(m => Handle(m));
-            Receive<InputReceived>(m => Handle(m));
+            Receive<ReceiveInput>(m => Handle(m));
             Receive<Welcome>(m => Handle(m));
         }
 
@@ -29,9 +33,17 @@ namespace ChatClient
             Stash.UnstashAll();
         }
 
-        private void Handle(InputReceived message)
+        private void Handle(ReceiveInput message)
         {
             var input = message.Input;
+
+            if (input == null)
+            {
+                Self.Tell(new GetNextInput());
+                return;
+            }
+            
+
             if (!input.StartsWith("\\"))
             {
                 SendSay(input);
@@ -49,7 +61,7 @@ namespace ChatClient
                 Context.System.Shutdown();
             }
 
-            Self.Tell(new ProcessInput());
+            Self.Tell(new GetNextInput());
 
         }
 
@@ -74,6 +86,9 @@ namespace ChatClient
 
         private void SendSay(string input)
         {
+            if (input == null) return;
+            
+
             if (_room != null)
             {
                 _room.Tell(new Say {Message = input});
@@ -89,11 +104,16 @@ namespace ChatClient
             Console.WriteLine("<{0}> {2}: {1}", message.ChatLogEntry.On, message.ChatLogEntry.Message, message.ChatLogEntry.Who);
         }
 
-        private void Handle(ProcessInput message)
+        private void Handle(GetNextInput message)
         {
             _consoleReader.Tell(message);
         }
 
         public IStash Stash { get; set; }
+    }
+
+    public interface IProcessCommands
+    {
+        bool Process(string command);
     }
 }

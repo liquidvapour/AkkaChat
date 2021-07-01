@@ -42,7 +42,7 @@
     <Compile Include="ChatLogEntry.cs" />
     <Compile Include="Join.cs" />
     <Compile Include="JoinRoom.cs" />
-    <Compile Include="ProcessInput.cs" />
+    <Compile Include="GetNextInput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Say.cs" />
     <Compile Include="Update.cs" />

@@ -67,14 +67,23 @@ namespace ChatClient
 
 
 
-            var chatSystem = ActorSystem.Create("ChatSystem", config);
+            using (var chatSystem = ActorSystem.Create("ChatSystem", config))
+            {
 
+                var consoleReader = chatSystem.ActorOf(Props.Create(() => new ConsoleReader(Console.In, Console.Out)), "consoleReader");
+                var chatter =
+                    chatSystem.ActorOf(
+                        Props.Create(() => new ChatterActor(
+                                          serverIp, 
+                                          serverPort,
+                                          null,
+                                          consoleReader)), 
+                       "chatter");
 
-            var chatter = chatSystem.ActorOf(Props.Create(() => new ChatterActor(serverIp, serverPort)), "chatter");
-            
-            chatter.Tell(new ProcessInput());
+                chatter.Tell(new GetNextInput());
 
-            chatSystem.AwaitTermination();
+                chatSystem.AwaitTermination();
+            }   
         }
 
         private static void Greet()

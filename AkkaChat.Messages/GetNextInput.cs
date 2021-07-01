@@ -1,6 +1,6 @@
 namespace AkkaChat.Messages
 {
-    public class ProcessInput
+    public class GetNextInput
     {
 
     }

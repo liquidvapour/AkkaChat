@@ -1,20 +1,25 @@
-using System;
+using System.IO;
 using Akka.Actor;
 using AkkaChat.Messages;
 
 namespace ChatClient
 {
-    class ConsoleReader : ReceiveActor
+    public class ConsoleReader : TypedActor, IHandle<GetNextInput>
     {
-        public ConsoleReader()
+        private readonly TextReader _inputReader;
+        private readonly TextWriter _outputWriter;
+
+        public ConsoleReader(TextReader inputReader, TextWriter outputWriter)
         {
-            Receive<ProcessInput>(m => Handle(m));
+            _inputReader = inputReader;
+            _outputWriter = outputWriter;
         }
 
-        private void Handle(ProcessInput processInput)
+        public void Handle(GetNextInput getNextInput)
         {
-            var input = Console.ReadLine();
-            Sender.Tell(new InputReceived(input));
-        }
+            _outputWriter.Write("> ");
+            var input = _inputReader.ReadLine();
+            Sender.Tell(new ReceiveInput(input));
+       }
     }
 }

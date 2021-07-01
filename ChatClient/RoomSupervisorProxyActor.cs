@@ -22,6 +22,8 @@ namespace ChatClient
 
         protected override void OnReceive(object message)
         {
+            if (_serverIp == "[TEST]") return;
+            
             _roomSupervisor.Tell(message, Sender);
         }
     }
